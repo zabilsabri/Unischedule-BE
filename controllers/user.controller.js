@@ -74,39 +74,31 @@ updateUser: async (req, res, next) => {
 
         let { name, std_code, gender, email, phone_number } = req.body;
         
-        try {
-            await prisma.user.update({
-                where: { id },
-                data: {
-                    name,
-                    std_code,
-                    gender,
-                    email,
-                    phone_number
-                }
-            });
-
-            return res.status(200).json({
-                status: true,
-                message: 'OK',
-                data: `Successfully updated user with name ${user.name}!`
-            });
-        } catch (error) {
-            if (error instanceof prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-                // This error code indicates a unique constraint violation
-                let conflictField = error.meta.target;
-
-                return res.status(409).json({
-                    status: false,
-                    message: `Conflict: ${conflictField} already exists.`,
-                    data: null
-                });
-            } else {
-                throw error; // Re-throw other errors to be handled by the outer catch block
+        await prisma.user.update({
+            where: { id },
+            data: {
+                name,
+                std_code,
+                gender,
+                email,
+                phone_number
             }
-        }
+        });
+
+        return res.status(200).json({
+            status: true,
+            message: 'OK',
+            data: `Successfully updated user with name ${user.name}!`
+        });
 
     } catch (error) {
+        if(error.code === 'P2002') {
+            return res.status(400).json({
+                status: false,
+                message: 'Credential that you input, is already in database!',
+                data: null
+            });
+        }
         next(error);
     }
 },
@@ -178,7 +170,14 @@ createUser: async (req, res, next) => {
         });
 
     } catch (error) {
-        
+        if(error.code === 'P2002') {
+            return res.status(400).json({
+                status: false,
+                message: 'Credential that you input, is already in database!',
+                data: null
+            });
+        }
+        next(error);
     }
 }
 
