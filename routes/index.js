@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { register, login, whoami } = require('../controllers/auth.controllers');
 const { getUsers, getUserById, updateUser, deleteUser, createUser } = require('../controllers/user.controller');
-const { getPost, getPostById, createPost } = require('../controllers/post.controller');
+const { getPost, getPostById, createPost, updatePost, deletePost } = require('../controllers/post.controller');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 
@@ -58,7 +58,8 @@ router.post('/user', restrict, isAdmin, createUser);
 // Post
 router.get('/posts', restrict, getPost);
 router.get('/post/:id', restrict, getPostById);
-router.post('/post', restrict, createPost);
-
+router.post('/post', restrict, isAdmin, createPost);
+router.put('/post/:id', restrict, isAdmin, updatePost);
+router.delete('/post/:id', restrict, isAdmin, deletePost);
 
 module.exports = router;

@@ -120,6 +120,45 @@ module.exports = {
         }
     },
 
+    updatePost: async (req, res, next) => {
+        try {
+            let id = parseInt(req.params.id);
+            let { title, content, organizer, eventDate, picture, is_event } = req.body;
+            let post = await prisma.post.update({
+                where: { id },
+                data: {
+                    title,
+                    content,
+                    organizer,
+                    eventDate,
+                    picture,
+                    is_event
+                }
+            });
+            return res.status(200).json({
+                status: true,
+                message: 'Post updated!',
+                data: post
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
 
+    deletePost: async (req, res, next) => {
+        try {
+            let id = parseInt(req.params.id);
+            let post = await prisma.post.delete({
+                where: { id }
+            });
+            return res.status(200).json({
+                status: true,
+                message: 'Post deleted!',
+                data: post
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 
 };
