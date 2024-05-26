@@ -28,9 +28,36 @@ model User {
   email         String  @unique
   phone_number  String
   password      String
+  pin           String?
+  expired_at    DateTime?
+  profile_image String?
   role          Role    @default(USER)
+  Participants  Participant[]
 
   @@map("users")
 
 }
 
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  organizer String
+  eventDate DateTime?
+  picture   String
+  createdAt DateTime @default(now())
+  is_event  Boolean 
+  Participants Participant[]
+
+  @@map("posts")
+}
+
+model Participant {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int
+  post   Post   @relation(fields: [postId], references: [id])
+  postId Int
+
+  @@map("participants")
+}
