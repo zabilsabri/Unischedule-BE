@@ -3,8 +3,14 @@ const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
+const { transporter } = require('../utils/transporter');
+const { generateRandomNumber } = require('../utils/pinGenerator');
+const { v4: uuidv4 } = require('uuid');
+const Redis = require('ioredis');
+const redis = new Redis();
 
 module.exports = {
+
     register: async (req, res, next) => {
         try {
             let { name, std_code, gender, email, phone_number, password, role } = req.body;
@@ -37,14 +43,38 @@ module.exports = {
             };
             if (role) userData.role = role;
             let user = await prisma.user.create({ data: userData });
-            delete user.password;
+
+            let pin = generateRandomNumber();
+
+            await redis.set(uuidv4(), pin, 'EX', 120);
+
+            const mailOptions = {
+                from: `"${process.env.EMAIL}"`,
+                to: email,
+                subject: 'Verify your email address!',
+                text: `Your PIN is ${pin}. It will expire in 2 minutes.`
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    return res.status(500).json({ message: 'Error sending email', error });
+                }
+            });
 
             return res.status(201).json({
                 status: true,
                 message: 'OK',
-                data: `Successfully registered user with email ${user.email}!`
+                data: `Successfully registered user with email ${user.email} and sending pin code!`
             });
+
         } catch (error) {
+            if (error.code === 'P2002') {
+                return res.status(400).json({
+                    status: false,
+                    message: 'credential that you input has already been used!',
+                    data: null
+                });
+            };
             next(error);
         }
     },
