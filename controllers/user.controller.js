@@ -29,7 +29,7 @@ getUsers: async (req, res, next) => {
 
 getUserById: async (req, res, next) => {
     try {
-        let id = parseInt(req.params.id);
+        let id = req.params.id;
         let user = await prisma.user.findUnique({
             where: { id },
             select: {
@@ -61,7 +61,7 @@ getUserById: async (req, res, next) => {
 
 updateUser: async (req, res, next) => {
     try {
-        let id = parseInt(req.params.id);
+        let id = req.params.id;
         let user = await prisma.user.findUnique({ where: { id } });
 
         if (!user) {
@@ -105,7 +105,7 @@ updateUser: async (req, res, next) => {
 
 deleteUser: async (req, res, next) => {
     try {
-        let id = parseInt(req.params.id);
+        let id = req.params.id;
         let user = await prisma.user.findUnique({ where: { id } });
 
         if (!user) {

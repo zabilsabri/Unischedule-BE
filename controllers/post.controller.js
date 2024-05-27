@@ -28,7 +28,7 @@ module.exports = {
 
     getPostById: async (req, res, next) => {
         try {
-            let id = parseInt(req.params.id);
+            let id = req.params.id;
             let post = await prisma.post.findUnique({
                 where: { id },
                 select: {
@@ -122,7 +122,7 @@ module.exports = {
 
     updatePost: async (req, res, next) => {
         try {
-            let id = parseInt(req.params.id);
+            let id = req.params.id;
             let { title, content, organizer, eventDate, picture, is_event } = req.body;
             let post = await prisma.post.update({
                 where: { id },
@@ -147,7 +147,7 @@ module.exports = {
 
     deletePost: async (req, res, next) => {
         try {
-            let id = parseInt(req.params.id);
+            let id = req.params.id;
             let post = await prisma.post.delete({
                 where: { id }
             });

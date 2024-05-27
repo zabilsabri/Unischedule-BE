@@ -21,25 +21,24 @@ enum Role {
 }
 
 model User {
-  id            Int     @id @default(autoincrement())
-  name          String
-  std_code      String? @unique
-  gender        Gender
-  email         String  @unique
-  phone_number  String  @unique
-  password      String
-  pin           String?
-  expired_at    DateTime?
-  profile_image String?
-  role          Role    @default(USER)
-  Participants  Participant[]
+  id             String       @id @default(uuid())
+  name           String
+  std_code       String? @unique
+  gender         Gender
+  email          String  @unique
+  phone_number   String  @unique
+  password       String
+  profile_image  String?
+  role           Role    @default(USER)
+  email_verified Boolean @default(false)
+  Participants   Participant[]
 
   @@map("users")
 
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
+  id        String       @id @default(uuid())
   title     String
   content   String
   organizer String
@@ -53,11 +52,11 @@ model Post {
 }
 
 model Participant {
-  id     Int    @id @default(autoincrement())
+  id     String       @id @default(uuid())
   user   User   @relation(fields: [userId], references: [id])
-  userId Int
+  userId String
   post   Post   @relation(fields: [postId], references: [id])
-  postId Int
+  postId String
 
   @@map("participants")
 }
