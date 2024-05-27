@@ -26,7 +26,7 @@ model User {
   std_code      String? @unique
   gender        Gender
   email         String  @unique
-  phone_number  String
+  phone_number  String  @unique
   password      String
   pin           String?
   expired_at    DateTime?
