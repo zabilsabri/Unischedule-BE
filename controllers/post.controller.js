@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const {toBoolean} = require('../utils/toBoolean');
 
 module.exports = {
     getPost: async (req, res, next) => {
@@ -27,6 +28,54 @@ module.exports = {
     },
 
     getPostById: async (req, res, next) => {
+        try {
+            let id = req.params.id;
+            
+            let post = await prisma.post.findUnique({
+                where: { id },
+                select: {
+                    id: true,
+                    title: true,
+                    content: true,
+                    organizer: true,
+                    eventDate: true,
+                    picture: true,
+                    is_event: true
+                }
+            });
+
+            if (!post) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'Post not found!',
+                    data: null
+                });
+            }
+
+            const data = {
+                id: post.id,
+                title: post.title,
+                content: post.content,
+                organizer: post.organizer,
+                eventDate: post.eventDate,
+                picture: post.picture,
+                is_event: post.is_event
+            }
+
+
+            return res.status(201).json({
+                status: true,
+                message: 'Post fetch successfully!',
+                data: data
+            }); 
+
+        }
+        catch (error) {
+            next(error);
+        }
+    },
+
+    getPostParticipantById: async (req, res, next) => {
         try {
             let id = req.params.id;
             let post = await prisma.post.findUnique({
@@ -87,7 +136,7 @@ module.exports = {
 
             return res.status(201).json({
                 status: true,
-                message: 'Post created!',
+                message: 'Post fetch successfully!',
                 data: data
             }); 
 
@@ -99,15 +148,17 @@ module.exports = {
 
     createPost: async (req, res, next) => {
         try {
-            let { title, content, organizer, eventDate, picture, is_event } = req.body;
+            let { title, content, organizer, eventDate, is_event } = req.body;
+            const imagePath = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+
             await prisma.post.create({
                 data: {
                     title,
                     content,
                     organizer,
                     eventDate,
-                    picture,
-                    is_event,
+                    picture: imagePath,
+                    is_event: toBoolean(is_event),
                 }
             });
             return res.status(201).json({

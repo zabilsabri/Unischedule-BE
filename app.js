@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const logger = require('morgan');
+const path = require('path');
 const app = express();
 
 app.use(logger('dev'));
@@ -8,6 +9,7 @@ app.use(express.json());
 
 const routes = require('./routes');
 app.use('/api/v1', routes);
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 // 500 error handler
 app.use((err, req, res, next) => {

@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { register, login, whoami, verifyEmail, resendPin } = require('../controllers/auth.controllers');
 const { getUsers, getUserById, updateUser, deleteUser, createUser } = require('../controllers/user.controller');
-const { getPost, getPostById, createPost, updatePost, deletePost } = require('../controllers/post.controller');
+const { getPost, getPostById, createPost, updatePost, deletePost, getPostParticipantById } = require('../controllers/post.controller');
+const multer = require('../utils/multer');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 
@@ -58,10 +59,12 @@ router.delete('/user/:id', restrict, isAdmin, deleteUser);
 router.post('/user', restrict, isAdmin, createUser);
 
 // Post
-router.get('/posts', restrict, getPost);
-router.get('/post/:id', restrict, getPostById);
-router.post('/post', restrict, isAdmin, createPost);
+router.get('/posts', getPost);
+router.get('/post/:id', getPostById);
+router.get('/post-participant/:id', restrict, isAdmin, getPostParticipantById);
+router.post('/post', restrict, isAdmin, multer.imageStorage.single('picture'), createPost);
 router.put('/post/:id', restrict, isAdmin, updatePost);
 router.delete('/post/:id', restrict, isAdmin, deletePost);
+
 
 module.exports = router;
