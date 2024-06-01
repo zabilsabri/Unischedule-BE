@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, whoami } = require('../controllers/auth.controllers');
+const { register, login, whoami, verifyEmail, resendPin } = require('../controllers/auth.controllers');
 const { getUsers, getUserById, updateUser, deleteUser, createUser } = require('../controllers/user.controller');
 const { getPost, getPostById, createPost, updatePost, deletePost } = require('../controllers/post.controller');
 const jwt = require('jsonwebtoken');
@@ -47,8 +47,10 @@ router.post('/register', register);
 router.post('/login', login);
 router.get('/whoami', restrict, whoami);
 router.post('/create-admin', restrict, isAdmin, (req, res, next) => { req.body.role = 'ADMIN'; next(); }, register);
+router.post('/verif-email/:id', restrict, verifyEmail);
+router.get('/send-verif', restrict, resendPin);
 
-// Users
+// Users 
 router.get('/users', restrict, isAdmin, getUsers);
 router.get('/user/:id', restrict, isAdmin, getUserById);
 router.put('/user/:id', restrict, isAdmin, updateUser);

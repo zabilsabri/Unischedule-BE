@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 const { transporter } = require('../utils/transporter');
 const { generateRandomNumber } = require('../utils/pinGenerator');
-const { v4: uuidv4 } = require('uuid');
 const Redis = require('ioredis');
 const redis = new Redis();
 
@@ -43,10 +42,9 @@ module.exports = {
             };
             if (role) userData.role = role;
             let user = await prisma.user.create({ data: userData });
-
-            let pin = generateRandomNumber();
-
-            await redis.set(uuidv4(), pin, 'EX', 120);
+            
+            const pin = generateRandomNumber();
+            await redis.set(user.id, pin, 'EX', 120);
 
             const mailOptions = {
                 from: `"${process.env.EMAIL}"`,
@@ -112,11 +110,95 @@ module.exports = {
             delete user.password;
             let token = jwt.sign(user, JWT_SECRET);
 
-            res.json({
+            return res.json({
                 status: true,
                 message: 'OK',
                 token: token
             });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    
+    verifyEmail: async (req, res, next) => {
+        try {
+            const pin  = req.body.pin;
+            const userId = req.params.id;
+
+            let user = await prisma.user.findFirst({ where: { id: userId } });
+
+            if (!user) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'user not found!',
+                    data: null
+                });
+            }
+
+            let value = await redis.get(userId);
+            if (value === null) {
+                return res.json({
+                    status: false,
+                    message: 'PIN has expired!'
+                });
+            }
+
+            await prisma.user.update({
+                where: { id: userId },
+                data: { email_verified: true }
+            });
+
+            await redis.del(userId);
+
+            return res.status(200).json({
+                status: true,
+                message: 'OK',
+                data: `Successfully verified email for user with email ${user.email}!`
+            });
+
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    resendPin: async (req, res, next) => {
+        try {
+
+            const userId = req.user.id;
+
+            let user = await prisma.user.findFirst({ where: { id: userId } });
+
+            if (!user) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'user not found!',
+                    data: null
+                });
+            }
+
+            const pin = generateRandomNumber();
+            await redis.set(userId, pin, 'EX', 120);
+
+            const mailOptions = {
+                from: `"${process.env.EMAIL}"`,
+                to: user.email,
+                subject: 'Verify your email address!',
+                text: `Your PIN is ${pin}. It will expire in 2 minutes.`
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    return res.status(500).json({ message: 'Error sending email', error });
+                }
+            });
+
+            return res.status(200).json({
+                status: true,
+                message: 'OK',
+                data: `Successfully resend pin code for user with email ${user.email}!`
+            });
+
         } catch (error) {
             next(error);
         }
