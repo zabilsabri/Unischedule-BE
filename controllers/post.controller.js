@@ -47,8 +47,7 @@ module.exports = {
             if (!post) {
                 return res.status(404).json({
                     status: false,
-                    message: 'Post not found!',
-                    data: null
+                    message: 'Post not found!'
                 });
             }
 
@@ -108,8 +107,7 @@ module.exports = {
             if (!post) {
                 return res.status(404).json({
                     status: false,
-                    message: 'Post not found!',
-                    data: null
+                    message: 'Post not found!'
                 });
             }
             
@@ -151,20 +149,28 @@ module.exports = {
             let { title, content, organizer, eventDate, is_event } = req.body;
             const imagePath = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
 
-            await prisma.post.create({
+            const data = await prisma.post.create({
                 data: {
                     title,
                     content,
                     organizer,
                     eventDate,
-                    picture: imagePath,
+                    picture: req.file.filename,
                     is_event: toBoolean(is_event),
                 }
             });
             return res.status(201).json({
                 status: true,
                 message: 'Post created!',
-                data: `Successfully added post with title ${title}`
+                data: {
+                    id: data.id,
+                    title: data.title,
+                    content: data.content,
+                    organizer: data.organizer,
+                    eventDate: data.eventDate,
+                    picture: imagePath,
+                    is_event: data.is_event
+                }
             });
         } catch (error) {
             next(error);
@@ -174,7 +180,9 @@ module.exports = {
     updatePost: async (req, res, next) => {
         try {
             let id = req.params.id;
-            let { title, content, organizer, eventDate, picture, is_event } = req.body;
+            let { title, content, organizer, eventDate, is_event } = req.body;
+
+            const imagePath = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
             let post = await prisma.post.update({
                 where: { id },
                 data: {
@@ -182,14 +190,23 @@ module.exports = {
                     content,
                     organizer,
                     eventDate,
-                    picture,
-                    is_event
+                    picture: req.file.filename,
+                    is_event: toBoolean(is_event)
                 }
             });
+
             return res.status(200).json({
                 status: true,
                 message: 'Post updated!',
-                data: post
+                data: {
+                    id: post.id,
+                    title: post.title,
+                    content: post.content,
+                    organizer: post.organizer,
+                    eventDate: post.eventDate,
+                    picture: imagePath,
+                    is_event: post.is_event
+                }
             });
         } catch (error) {
             next(error);
@@ -199,13 +216,13 @@ module.exports = {
     deletePost: async (req, res, next) => {
         try {
             let id = req.params.id;
-            let post = await prisma.post.delete({
+            await prisma.post.delete({
                 where: { id }
             });
             return res.status(200).json({
                 status: true,
                 message: 'Post deleted!',
-                data: post
+                data: null
             });
         } catch (error) {
             next(error);
