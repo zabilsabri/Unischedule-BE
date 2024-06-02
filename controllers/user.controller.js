@@ -44,8 +44,7 @@ getUserById: async (req, res, next) => {
         if (!user) {
             return res.status(404).json({
                 status: false,
-                message: 'User not found!',
-                data: null
+                message: 'User not found!'
             });
         }
         return res.status(200).json({
@@ -67,14 +66,13 @@ updateUser: async (req, res, next) => {
         if (!user) {
             return res.status(404).json({
                 status: false,
-                message: 'User not found!',
-                data: null
+                message: 'User not found!'
             });
         }
 
         let { name, std_code, gender, email, phone_number } = req.body;
         
-        await prisma.user.update({
+        const data = await prisma.user.update({
             where: { id },
             data: {
                 name,
@@ -87,16 +85,15 @@ updateUser: async (req, res, next) => {
 
         return res.status(200).json({
             status: true,
-            message: 'OK',
-            data: `Successfully updated user with name ${user.name}!`
+            message: `Successfully updated user with name ${user.name}!`,
+            data: data
         });
 
     } catch (error) {
         if(error.code === 'P2002') {
             return res.status(400).json({
                 status: false,
-                message: 'Credential that you input, is already in database!',
-                data: null
+                message: 'Credential that you input, is already in database!'
             });
         }
         next(error);
@@ -111,8 +108,7 @@ deleteUser: async (req, res, next) => {
         if (!user) {
             return res.status(404).json({
                 status: false,
-                message: 'User not found!',
-                data: null
+                message: 'User not found!'
             });
         }
 
@@ -120,8 +116,8 @@ deleteUser: async (req, res, next) => {
 
         return res.status(200).json({
             status: true,
-            message: 'OK',
-            data: `Successfully deleted user with name ${user.name}!`
+            message: `Successfully deleted user with name ${user.name}!`,
+            data: null
         });
 
     } catch (error) {
@@ -136,8 +132,7 @@ createUser: async (req, res, next) => {
         if (!name || !std_code || !gender || !phone_number || !email || !password || !role) {
             return res.status(400).json({
                 status: false,
-                message: 'name, email and password are required!',
-                data: null
+                message: 'name, email and password are required!'
             });
         }
 
@@ -145,8 +140,7 @@ createUser: async (req, res, next) => {
         if (exist) {
             return res.status(400).json({
                 status: false,
-                message: 'email has already been used!',
-                data: null
+                message: 'email has already been used!'
             });
         }
 
@@ -165,16 +159,15 @@ createUser: async (req, res, next) => {
 
         return res.status(201).json({
             status: true,
-            message: 'OK',
-            data: `Successfully registered user with email ${user.email}!`
+            message: `Successfully registered user with email ${user.email}!`,
+            data: user
         });
 
     } catch (error) {
         if(error.code === 'P2002') {
             return res.status(400).json({
                 status: false,
-                message: 'Credential that you input, is already in database!',
-                data: null
+                message: 'Credential that you input, is already in database!'
             });
         }
         next(error);
