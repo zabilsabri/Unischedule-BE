@@ -59,10 +59,13 @@ module.exports = {
                 }
             });
 
+            let token = jwt.sign(user, JWT_SECRET);
+
             return res.status(201).json({
                 status: true,
-                message: 'OK',
-                data: `Successfully registered user with email ${user.email} and sending pin code!`
+                message: `Successfully registered user with email ${user.email} and sending pin code!`,
+                token: token,
+                data: user
             });
 
         } catch (error) {
