@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const {toBoolean} = require('../utils/toBoolean');
+const fs = require('fs');
 
 module.exports = {
     getPost: async (req, res, next) => {
@@ -182,6 +183,27 @@ module.exports = {
             let id = req.params.id;
             let { title, content, organizer, eventDate, is_event } = req.body;
 
+            const oldPost = await prisma.post.findUnique({
+                where: { id },
+                select: { picture: true }
+            });
+
+            if (!oldPost) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'Post not found!'
+                });
+            }
+
+            fs.unlink(`./public/images/${oldPost.picture}`, (err) => {
+                if (err) {
+                    return res.status(500).json({
+                        status: false,
+                        message: 'Something went wrong in server, try again!'
+                    });
+                }
+            });
+
             const imagePath = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
             let post = await prisma.post.update({
                 where: { id },
@@ -216,6 +238,28 @@ module.exports = {
     deletePost: async (req, res, next) => {
         try {
             let id = req.params.id;
+
+            const oldPost = await prisma.post.findUnique({
+                where: { id },
+                select: { picture: true }
+            });
+
+            if (!oldPost) {
+                return res.status(500).json({
+                    status: false,
+                    message: 'Something went wrong in server, try again!'
+                });
+            }
+
+            fs.unlink(`./public/images/${oldPost.picture}`, (err) => {
+                if (err) {
+                    return res.status(500).json({
+                        status: false,
+                        message: 'Something went wrong in server, try again!'
+                    });
+                }
+            });
+
             await prisma.post.delete({
                 where: { id }
             });
