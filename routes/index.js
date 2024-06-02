@@ -3,6 +3,7 @@ const router = express.Router();
 const { register, login, whoami, verifyEmail, resendPin } = require('../controllers/auth.controllers');
 const { getUsers, getUserById, updateUser, deleteUser, createUser } = require('../controllers/user.controller');
 const { getPost, getPostById, createPost, updatePost, deletePost, getPostParticipantById } = require('../controllers/post.controller');
+const { registerEvent } = require('../controllers/participant.controller');
 const multer = require('../utils/multer');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
@@ -63,8 +64,10 @@ router.get('/posts', getPost);
 router.get('/post/:id', getPostById);
 router.get('/post-participant/:id', restrict, isAdmin, getPostParticipantById);
 router.post('/post', restrict, isAdmin, multer.imageStorage.single('picture'), createPost);
-router.put('/post/:id', restrict, isAdmin, updatePost);
+router.put('/post/:id', restrict, isAdmin, multer.imageStorage.single('picture'), updatePost);
 router.delete('/post/:id', restrict, isAdmin, deletePost);
 
+// Participant
+router.post('/register-event', restrict, registerEvent);
 
 module.exports = router;
