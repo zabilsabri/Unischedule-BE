@@ -23,8 +23,7 @@ app.use((err, req, res, next) => {
     console.log(err);
     res.status(500).json({
         status: false,
-        message: err.message,
-        data: null
+        message: err.message
     });
 });
 
@@ -32,8 +31,7 @@ app.use((err, req, res, next) => {
 app.use((req, res, next) => {
     res.status(404).json({
         status: false,
-        message: `are you lost? ${req.method} ${req.url} is not registered!`,
-        data: null
+        message: `are you lost? ${req.method} ${req.url} is not registered!`
     });
 });
 
