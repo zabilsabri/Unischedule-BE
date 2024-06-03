@@ -8,9 +8,9 @@ const { generateRandomNumber } = require('../utils/pinGenerator');
 const Redis = require('ioredis');
 const redis = new Redis({
     host: REDIS_HOST,
-    port: REDIS_PORT,
+    port: 17450,
     password: REDIS_PASSWORD,
-    tls: {}
+    connectTimeout: 10000
 });
 
 module.exports = {
