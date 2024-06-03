@@ -4,8 +4,12 @@ const logger = require('morgan');
 const path = require('path');
 const app = express();
 const cors = require('cors');
-
-app.use(cors());
+const corsConfig = {
+    origin: "*",
+    credential: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'] 
+};
+app.use(cors(corsConfig));
 app.use(logger('dev'));
 app.use(express.json());
 
