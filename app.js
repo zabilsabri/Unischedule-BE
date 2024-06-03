@@ -3,6 +3,10 @@ const express = require('express');
 const logger = require('morgan');
 const path = require('path');
 const app = express();
+// Test
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
 const cors = require('cors');
 const corsConfig = {
     origin: "*",
@@ -13,11 +17,6 @@ app.options('', cors(corsConfig));
 app.use(cors(corsConfig));
 app.use(logger('dev'));
 app.use(express.json());
-
-// Test
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
 
 const routes = require('./routes');
 app.use('/api/v1', routes);
