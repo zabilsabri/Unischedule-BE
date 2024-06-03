@@ -2,11 +2,16 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD } = process.env;
 const { transporter } = require('../utils/transporter');
 const { generateRandomNumber } = require('../utils/pinGenerator');
 const Redis = require('ioredis');
-const redis = new Redis();
+const redis = new Redis({
+    host: REDIS_HOST,
+    port: REDIS_PORT,
+    password: REDIS_PASSWORD,
+    tls: {}
+});
 
 module.exports = {
 
