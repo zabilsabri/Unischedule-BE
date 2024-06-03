@@ -7,7 +7,7 @@
     "node": "20.x"
   },
   "scripts": {
-    "build": "prisma generate",
+    "postinstall": "prisma generate",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
