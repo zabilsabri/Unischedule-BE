@@ -14,6 +14,11 @@ app.use(cors(corsConfig));
 app.use(logger('dev'));
 app.use(express.json());
 
+// Test
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
+
 const routes = require('./routes');
 app.use('/api/v1', routes);
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
