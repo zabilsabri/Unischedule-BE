@@ -3,7 +3,9 @@ const express = require('express');
 const logger = require('morgan');
 const path = require('path');
 const app = express();
+const cors = require('cors');
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 
