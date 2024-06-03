@@ -7,7 +7,7 @@
     "node": "18.x"
   },
   "scripts": {
-    "start": "node ./bin/index.js",
+    "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "postinstall": "prisma generate"
   },
