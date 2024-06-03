@@ -64,13 +64,22 @@ module.exports = {
                 }
             });
 
-            let token = jwt.sign(user, JWT_SECRET);
+            const jwtUser = {
+                id: user.id,
+                name: user.name,
+                std_code: user.std_code,
+                email: user.email,
+                phone_number: user.phone_number,
+                gender: user.gender,
+                role: user.role
+            }
+
+            let token = jwt.sign(jwtUser, JWT_SECRET);
 
             return res.status(201).json({
                 status: true,
                 message: `Successfully registered user with email ${user.email} and sending pin code!`,
-                token: token,
-                data: user
+                token: token
             });
 
         } catch (error) {
@@ -97,7 +106,7 @@ module.exports = {
             }
 
             let user = await prisma.user.findFirst({ where: { email } });
-            console.log(user);
+
             if (!user) {
                 return res.status(400).json({
                     status: false,
@@ -116,7 +125,18 @@ module.exports = {
             }
 
             delete user.password;
-            let token = jwt.sign(user, JWT_SECRET);
+
+            const jwtUser = {
+                id: user.id,
+                name: user.name,
+                std_code: user.std_code,
+                email: user.email,
+                phone_number: user.phone_number,
+                gender: user.gender,
+                role: user.role
+            }
+
+            let token = jwt.sign(jwtUser, JWT_SECRET);
 
             return res.json({
                 status: true,
@@ -150,14 +170,14 @@ module.exports = {
                     status: false,
                     message: 'PIN has expired!'
                 });
+            } else if (value == pin) {
+                await redis.del(userId);
             }
 
             await prisma.user.update({
                 where: { id: userId },
                 data: { email_verified: true }
             });
-
-            await redis.del(userId);
 
             return res.status(200).json({
                 status: true,
