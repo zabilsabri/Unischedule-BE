@@ -49,7 +49,7 @@ router.post('/register', register);
 router.post('/login', login);
 router.get('/whoami', restrict, whoami);
 router.post('/create-admin', restrict, isAdmin, (req, res, next) => { req.body.role = 'ADMIN'; next(); }, register);
-router.get('/verif-email', restrict, verifyEmail);
+router.post('/verif-email', restrict, verifyEmail);
 router.get('/send-verif', restrict, resendPin);
 
 // Users 
