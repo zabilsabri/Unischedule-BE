@@ -152,7 +152,7 @@ module.exports = {
     verifyEmail: async (req, res, next) => {
         try {
             const pin  = req.body.pin;
-            const userId = req.params.id;
+            const userId = req.user.id;
 
             let user = await prisma.user.findFirst({ where: { id: userId } });
 
