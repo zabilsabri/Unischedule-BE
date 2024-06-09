@@ -66,13 +66,7 @@ module.exports = {
 
             const jwtUser = {
                 id: user.id,
-                name: user.name,
-                std_code: user.std_code,
-                email: user.email,
-                phone_number: user.phone_number,
-                gender: user.gender,
-                role: user.role,
-                is_verified: user.email_verified
+                role: user.role
             }
 
             let token = jwt.sign(jwtUser, JWT_SECRET);
@@ -129,13 +123,7 @@ module.exports = {
 
             const jwtUser = {
                 id: user.id,
-                name: user.name,
-                std_code: user.std_code,
-                email: user.email,
-                phone_number: user.phone_number,
-                gender: user.gender,
-                role: user.role,
-                is_verified: user.email_verified
+                role: user.role
             }
 
             let token = jwt.sign(jwtUser, JWT_SECRET);
@@ -236,10 +224,29 @@ module.exports = {
 
     whoami: async (req, res, next) => {
         try {
+
+            const userId = req.user.id;
+
+            const currentUser = await prisma.user.findFirst({ 
+                where: { 
+                    id: userId 
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    std_code: true,
+                    email: true,
+                    phone_number: true,
+                    gender: true,
+                    role: true,
+                    email_verified: true
+                } 
+            });
+
             res.json({
                 status: true,
                 message: 'OK',
-                data: req.user
+                data: currentUser
             });
         } catch (error) {
             next(error);
