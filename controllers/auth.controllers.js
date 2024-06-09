@@ -71,7 +71,8 @@ module.exports = {
                 email: user.email,
                 phone_number: user.phone_number,
                 gender: user.gender,
-                role: user.role
+                role: user.role,
+                is_verified: user.email_verified
             }
 
             let token = jwt.sign(jwtUser, JWT_SECRET);
@@ -133,7 +134,8 @@ module.exports = {
                 email: user.email,
                 phone_number: user.phone_number,
                 gender: user.gender,
-                role: user.role
+                role: user.role,
+                is_verified: user.email_verified
             }
 
             let token = jwt.sign(jwtUser, JWT_SECRET);
