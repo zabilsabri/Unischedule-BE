@@ -15,6 +15,7 @@ getUsers: async (req, res, next) => {
                 gender: true,
                 email: true,
                 phone_number: true,
+                role: true
             }
         });
         return res.status(200).json({
@@ -39,6 +40,7 @@ getUserById: async (req, res, next) => {
                 gender: true,
                 email: true,
                 phone_number: true,
+                role: true
             }
         });
         if (!user) {
