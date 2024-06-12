@@ -195,7 +195,7 @@ module.exports = {
                 });
             }
 
-            fs.unlink(`./public/images/${oldPost.picture}`, (err) => {
+            fs.unlink(`./tmp/images/${oldPost.picture}`, (err) => {
                 if (err) {
                     return res.status(500).json({
                         status: false,
@@ -251,7 +251,7 @@ module.exports = {
                 });
             }
 
-            fs.unlink(`./public/images/${oldPost.picture}`, (err) => {
+            fs.unlink(`./tmp/images/${oldPost.picture}`, (err) => {
                 if (err) {
                     return res.status(500).json({
                         status: false,

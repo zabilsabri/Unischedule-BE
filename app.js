@@ -16,7 +16,7 @@ app.use(express.json());
 
 const routes = require('./routes');
 app.use('/api/v1', routes);
-app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/images', express.static(path.join(__dirname, 'tmp/images')));
 
 // 500 error handler
 app.use((err, req, res, next) => {

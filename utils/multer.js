@@ -10,10 +10,10 @@ const filename = (req, file, callback) => {
 const generateStorage = (destination) => {
     return multer.diskStorage({
         destination: (req, file, callback) => {
-            const dir = './public/images';
+            const dir = './tmp/images';
 
             if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
+                fs.mkdirSync(dir, { recursive: true });
             }
 
             callback(null, dir);
@@ -35,7 +35,7 @@ const generateFileFilter = (mimetypes) => {
 
 module.exports = {
     imageStorage: multer({
-        storage: generateStorage('./public/images'),
+        storage: generateStorage('./tmp/images'),
         fileFilter: generateFileFilter([
             'image/png',
             'image/jpg',
