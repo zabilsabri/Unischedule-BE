@@ -58,7 +58,7 @@ module.exports = {
                 text: `Your PIN is ${pin}. It will expire in 2 minutes.`
             };
 
-            transporter.sendMail(mailOptions, (error, info) => {
+            await transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     return res.status(500).json({ message: 'Error sending email', error });
                 }
@@ -205,7 +205,7 @@ module.exports = {
                 text: `Your PIN is ${pin}. It will expire in 2 minutes.`
             };
 
-            transporter.sendMail(mailOptions, (error, info) => {
+            await transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     return res.status(500).json({ message: 'Error sending email', error });
                 }
