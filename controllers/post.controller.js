@@ -2,6 +2,11 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const {toBoolean} = require('../utils/toBoolean');
 const fs = require('fs');
+const imageKit = require('../utils/imageKit');
+const path = require('path');
+const getFileId  = require('../utils/fileId');
+const { get } = require('https');
+const { url } = require('inspector');
 
 module.exports = {
     getPost: async (req, res, next) => {
@@ -148,7 +153,12 @@ module.exports = {
     createPost: async (req, res, next) => {
         try {
             let { title, content, organizer, eventDate, is_event } = req.body;
-            const imagePath = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+            let strFile = req.file.buffer.toString('base64');
+
+            let { url } = await imageKit.upload({
+                fileName: Date.now() + path.extname(req.file.originalname),
+                file: strFile
+            });
 
             const data = await prisma.post.create({
                 data: {
@@ -156,7 +166,7 @@ module.exports = {
                     content,
                     organizer,
                     eventDate,
-                    picture: req.file.filename,
+                    picture: url,
                     is_event: toBoolean(is_event),
                 }
             });
@@ -169,7 +179,7 @@ module.exports = {
                     content: data.content,
                     organizer: data.organizer,
                     eventDate: data.eventDate,
-                    picture: imagePath,
+                    picture: data.picture,
                     is_event: data.is_event
                 }
             });
@@ -182,6 +192,7 @@ module.exports = {
         try {
             let id = req.params.id;
             let { title, content, organizer, eventDate, is_event } = req.body;
+            let url;
 
             const oldPost = await prisma.post.findUnique({
                 where: { id },
@@ -193,18 +204,21 @@ module.exports = {
                     status: false,
                     message: 'Post not found!'
                 });
+            };
+
+            if(req.file != undefined){
+
+                const filename = oldPost.picture.substring(oldPost.picture.lastIndexOf('/') + 1);
+                await imageKit.deleteFile(await getFileId(filename));
+
+                let strFile = req.file.buffer.toString('base64');
+                url = await imageKit.upload({
+                    fileName: Date.now() + path.extname(req.file.originalname),
+                    file: strFile
+                });
+
             }
 
-            fs.unlink(`./tmp/images/${oldPost.picture}`, (err) => {
-                if (err) {
-                    return res.status(500).json({
-                        status: false,
-                        message: 'Something went wrong in server, try again!'
-                    });
-                }
-            });
-
-            const imagePath = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
             let post = await prisma.post.update({
                 where: { id },
                 data: {
@@ -212,21 +226,21 @@ module.exports = {
                     content,
                     organizer,
                     eventDate,
-                    picture: req.file.filename,
+                    picture: (url === undefined) ? oldPost.picture : url.url,
                     is_event: toBoolean(is_event)
                 }
             });
 
             return res.status(200).json({
                 status: true,
-                message: 'Post updated!',
+                message: 'Post Updated!',
                 data: {
                     id: post.id,
                     title: post.title,
                     content: post.content,
                     organizer: post.organizer,
                     eventDate: post.eventDate,
-                    picture: imagePath,
+                    picture: (url === undefined) ? oldPost.picture : url.url,
                     is_event: post.is_event
                 }
             });
@@ -239,26 +253,13 @@ module.exports = {
         try {
             let id = req.params.id;
 
-            const oldPost = await prisma.post.findUnique({
+            const post = await prisma.post.findUnique({
                 where: { id },
                 select: { picture: true }
             });
 
-            if (!oldPost) {
-                return res.status(500).json({
-                    status: false,
-                    message: 'Something went wrong in server, try again!'
-                });
-            }
-
-            fs.unlink(`./tmp/images/${oldPost.picture}`, (err) => {
-                if (err) {
-                    return res.status(500).json({
-                        status: false,
-                        message: 'Something went wrong in server, try again!'
-                    });
-                }
-            });
+            const filename = post.picture.substring(post.picture.lastIndexOf('/') + 1);
+            await imageKit.deleteFile(await getFileId(filename));
 
             await prisma.post.delete({
                 where: { id }

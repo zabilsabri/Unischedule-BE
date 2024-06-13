@@ -4,7 +4,7 @@ const { register, login, whoami, verifyEmail, resendPin } = require('../controll
 const { getUsers, getUserById, updateUser, deleteUser, createUser } = require('../controllers/user.controller');
 const { getPost, getPostById, createPost, updatePost, deletePost, getPostParticipantById } = require('../controllers/post.controller');
 const { registerEvent } = require('../controllers/participant.controller');
-const multer = require('../utils/multer');
+const { image } = require('../utils/multer');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 
@@ -63,8 +63,8 @@ router.post('/user', restrict, isAdmin, createUser);
 router.get('/posts', getPost);
 router.get('/post/:id', getPostById);
 router.get('/post-participant/:id', restrict, isAdmin, getPostParticipantById);
-router.post('/post', restrict, isAdmin, multer.imageStorage.single('picture'), createPost);
-router.put('/post/:id', restrict, isAdmin, multer.imageStorage.single('picture'), updatePost);
+router.post('/post', restrict, isAdmin, image.single('picture'), createPost);
+router.put('/post/:id', restrict, isAdmin, image.single('picture'), updatePost);
 router.delete('/post/:id', restrict, isAdmin, deletePost);
 
 // Participant
