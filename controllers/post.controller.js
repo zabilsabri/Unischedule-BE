@@ -266,8 +266,7 @@ module.exports = {
             });
             return res.status(200).json({
                 status: true,
-                message: 'Post deleted!',
-                data: null
+                message: 'Post deleted!'
             });
         } catch (error) {
             next(error);

@@ -118,8 +118,7 @@ deleteUser: async (req, res, next) => {
 
         return res.status(200).json({
             status: true,
-            message: `Successfully deleted user with name ${user.name}!`,
-            data: null
+            message: `Successfully deleted user with name ${user.name}!`
         });
 
     } catch (error) {
