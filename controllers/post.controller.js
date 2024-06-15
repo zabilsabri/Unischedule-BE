@@ -5,8 +5,6 @@ const fs = require('fs');
 const imageKit = require('../utils/imageKit');
 const path = require('path');
 const getFileId  = require('../utils/fileId');
-const { get } = require('https');
-const { url } = require('inspector');
 
 module.exports = {
     getPost: async (req, res, next) => {
