@@ -239,7 +239,8 @@ module.exports = {
                     phone_number: true,
                     gender: true,
                     role: true,
-                    email_verified: true
+                    email_verified: true,
+                    profile_image: true
                 } 
             });
 
