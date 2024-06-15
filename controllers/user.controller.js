@@ -9,9 +9,6 @@ module.exports = {
 getUsers: async (req, res, next) => {
     try {
         let users = await prisma.user.findMany({
-            where: {
-                role: 'USER'
-            },
             select: {
                 id: true,
                 name: true,
@@ -87,7 +84,7 @@ updateUser: async (req, res, next) => {
         let url;
 
         if(req.file != undefined) {
-            
+
             if(user.profile_image != null) {
                 const filename = user.profile_image.substring(user.profile_image.lastIndexOf('/') + 1);
                 await imageKit.deleteFile(await getFileId(filename));
