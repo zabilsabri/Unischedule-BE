@@ -55,9 +55,9 @@ router.get('/send-verif', restrict, resendPin);
 // Users 
 router.get('/users', restrict, isAdmin, getUsers);
 router.get('/user/:id', restrict, isAdmin, getUserById);
-router.put('/user/:id', restrict, isAdmin, updateUser);
+router.put('/user/:id', restrict, image.single('picture'), updateUser);
 router.delete('/user/:id', restrict, isAdmin, deleteUser);
-router.post('/user', restrict, isAdmin, createUser);
+router.post('/user', restrict, isAdmin, image.single('picture'), createUser);
 
 // Post
 router.get('/posts', getPost);

@@ -1,4 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcrypt');
+const imageKit = require('../utils/imageKit');
+const path = require('path');
+const getFileId  = require('../utils/fileId');
 const prisma = new PrismaClient();
 
 module.exports = {
@@ -72,7 +76,29 @@ updateUser: async (req, res, next) => {
             });
         }
 
-        let { name, std_code, gender, email, phone_number } = req.body;
+        if(req.user.role != 'ADMIN' && req.user.id != user.id) {
+            return res.status(401).json({
+                status: false,
+                message: 'You are not authorized to update this user!'
+            });
+        }
+
+        let { name, std_code, gender, phone_number } = req.body;
+        let url;
+
+        if(req.file != undefined) {
+            
+            if(user.profile_image != null) {
+                const filename = user.profile_image.substring(user.profile_image.lastIndexOf('/') + 1);
+                await imageKit.deleteFile(await getFileId(filename));
+            }
+
+            let strFile = req.file.buffer.toString('base64');
+            url = await imageKit.upload({
+                fileName: Date.now() + path.extname(req.file.originalname),
+                file: strFile
+            });
+        }
         
         const data = await prisma.user.update({
             where: { id },
@@ -80,10 +106,12 @@ updateUser: async (req, res, next) => {
                 name,
                 std_code,
                 gender,
-                email,
-                phone_number
+                phone_number,
+                profile_image: (url === undefined) ? user.profile_image : url.url
             }
         });
+
+        delete data.password;
 
         return res.status(200).json({
             status: true,
@@ -95,7 +123,7 @@ updateUser: async (req, res, next) => {
         if(error.code === 'P2002') {
             return res.status(400).json({
                 status: false,
-                message: 'Credential that you input, is already in database!'
+                message: 'std_code/email/phone_number that you input, is already in database!'
             });
         }
         next(error);
@@ -114,6 +142,9 @@ deleteUser: async (req, res, next) => {
             });
         }
 
+        const filename = user.profile_image.substring(user.profile_image.lastIndexOf('/') + 1);
+        await imageKit.deleteFile(await getFileId(filename));
+
         await prisma.user.delete({ where: { id } });
 
         return res.status(200).json({
@@ -130,10 +161,10 @@ createUser: async (req, res, next) => {
     try {
         let { name, std_code, gender, email, phone_number, password, role } = req.body;
             
-        if (!name || !std_code || !gender || !phone_number || !email || !password || !role) {
+        if (!name || !gender || !phone_number || !email || !password) {
             return res.status(400).json({
                 status: false,
-                message: 'name, email and password are required!'
+                message: 'name, email, gender, phone_number and password are required!'
             });
         }
 
@@ -145,6 +176,15 @@ createUser: async (req, res, next) => {
             });
         }
 
+        let url;
+        if(req.file != undefined) {
+            let strFile = req.file.buffer.toString('base64');
+            url = await imageKit.upload({
+                fileName: Date.now() + path.extname(req.file.originalname),
+                file: strFile
+            });
+        }
+
         let encryptedPassword = await bcrypt.hash(password, 10);
         let userData = {
             name,
@@ -152,8 +192,10 @@ createUser: async (req, res, next) => {
             gender,
             email,
             phone_number,
-            password: encryptedPassword
+            password: encryptedPassword,
+            profile_image: (url === undefined) ? null : url.url
         };
+
         if (role) userData.role = role;
         let user = await prisma.user.create({ data: userData });
         delete user.password;
@@ -168,7 +210,7 @@ createUser: async (req, res, next) => {
         if(error.code === 'P2002') {
             return res.status(400).json({
                 status: false,
-                message: 'Credential that you input, is already in database!'
+                message: 'std_code/email/phone_number that you input, is already in database!'
             });
         }
         next(error);
