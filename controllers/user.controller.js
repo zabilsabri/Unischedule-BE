@@ -139,8 +139,10 @@ deleteUser: async (req, res, next) => {
             });
         }
 
-        const filename = user.profile_image.substring(user.profile_image.lastIndexOf('/') + 1);
-        await imageKit.deleteFile(await getFileId(filename));
+        if(user.profile_image != null){
+            const filename = user.profile_image.substring(user.profile_image.lastIndexOf('/') + 1);
+            await imageKit.deleteFile(await getFileId(filename));
+        }
 
         await prisma.user.delete({ where: { id } });
 
