@@ -16,7 +16,8 @@ getUsers: async (req, res, next) => {
                 gender: true,
                 email: true,
                 phone_number: true,
-                role: true
+                role: true,
+                profile_image: true
             }
         });
         return res.status(200).json({
@@ -41,7 +42,8 @@ getUserById: async (req, res, next) => {
                 gender: true,
                 email: true,
                 phone_number: true,
-                role: true
+                role: true,
+                profile_image: true
             }
         });
         if (!user) {
