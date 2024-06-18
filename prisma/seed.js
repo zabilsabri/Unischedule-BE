@@ -22,21 +22,21 @@ const bcrypt = require('bcrypt');
     });
 
     // create 30 new user
-    for (let i = 0; i < 30; i++) {
-        const user = await prisma.user.upsert({
-            where: {
-                email: `user${i}`
-            },
-            update: {},
-            create: {
-                name: `user${i}`,
-                email: `user${i}`,
-                password: password,
-                gender: 'MALE',
-                phone_number: `911${i}`,
-                role: 'USER',
-                email_verified: true
-            }
-        });
-    }
+    // for (let i = 0; i < 30; i++) {
+    //     const user = await prisma.user.upsert({
+    //         where: {
+    //             email: `user${i}`
+    //         },
+    //         update: {},
+    //         create: {
+    //             name: `user${i}`,
+    //             email: `user${i}`,
+    //             password: password,
+    //             gender: 'MALE',
+    //             phone_number: `911${i}`,
+    //             role: 'USER',
+    //             email_verified: true
+    //         }
+    //     });
+    // }
 })();
