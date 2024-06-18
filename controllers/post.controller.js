@@ -158,6 +158,8 @@ module.exports = {
                 file: strFile
             });
 
+            eventDate = eventDate == "null" ? null : eventDate;
+
             const data = await prisma.post.create({
                 data: {
                     title,
