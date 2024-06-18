@@ -4,7 +4,7 @@ require('dotenv').config();
 async function getFileId(name) {
     try {
         const imageKitUrl = `https://api.imagekit.io/v1/files?searchQuery=name = "${name}"`;
-        
+
         const response = await axios.get(imageKitUrl, {
           headers: {
             'Authorization': `Basic ${Buffer.from(`${process.env.IMAGEKIT_PRIVATE_KEY}:`).toString('base64')}`,
@@ -18,7 +18,7 @@ async function getFileId(name) {
           return 'Error fetching fileId:', response.statusText;
         }
     } catch (error) {
-        return 'Error fetching fileId:', error;
+        return null;
     }    
 }
 
