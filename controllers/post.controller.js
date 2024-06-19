@@ -5,6 +5,14 @@ const fs = require('fs');
 const imageKit = require('../utils/imageKit');
 const path = require('path');
 const getFileId  = require('../utils/fileId');
+const admin = require('firebase-admin');
+const fcm = require('fcm-node');
+
+const serviceAccount = require('../config/push-notification-key.json');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+});
 
 module.exports = {
     getPost: async (req, res, next) => {
@@ -170,6 +178,29 @@ module.exports = {
                     is_event: toBoolean(is_event),
                 }
             });
+
+            const tokens = await prisma.fcp_device.findMany({
+                select: {
+                    token: true
+                }
+            });
+
+            const message = {
+                notification: {
+                    title: title,
+                    body: content,
+                },
+                tokens: tokens,
+            };
+
+            const response = await admin.messaging().sendMulticast(message);
+            console.log(`${response.successCount} messages were sent successfully`);
+            response.responses.forEach((resp, idx) => {
+                if (!resp.success) {
+                    console.log(`Failed to send message to ${tokens[idx]}: ${resp.error}`);
+                }
+            });
+
             return res.status(201).json({
                 status: true,
                 message: 'Post created!',
@@ -339,6 +370,33 @@ module.exports = {
                 message: 'OK',
                 data: data
             });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    testNotif: async (req, res, next) => {
+        try {
+            const { token, title, body } = req.body;
+
+            const message = {
+                notification: {
+                    title: title,
+                    body: body,
+                },
+                token: token,
+            };
+        
+            try {
+                const response = await admin.messaging().send(message);
+                return res.status(200).json({
+                    status: true,
+                    message: 'Notification sent!',
+                    data: response
+                });
+            } catch (error) {
+                return res.status(500).send({ error: error.message });
+            }
         } catch (error) {
             next(error);
         }
