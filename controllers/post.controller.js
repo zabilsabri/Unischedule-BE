@@ -271,6 +271,72 @@ module.exports = {
         } catch (error) {
             next(error);
         }
+    },
+
+    getPostByUserId: async (req, res, next) => {
+        try {
+            let userId = req.user.id;
+            let posts = await prisma.post.findMany({
+                select: {
+                    id: true,
+                    title: true,
+                    content: true,
+                    organizer: true,
+                    eventDate: true,
+                    picture: true,
+                    is_event: true,
+                    Participants: {
+                        select: {
+                            user: {
+                                select: {
+                                    id: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const rawData = posts.map(post => {
+                return {
+                    id: post.id,
+                    title: post.title,
+                    content: post.content,
+                    organizer: post.organizer,
+                    eventDate: post.eventDate,
+                    picture: post.picture,
+                    is_event: post.is_event,
+                    participants: post.Participants.map(participant => {
+                        if(participant.user.id === userId){
+                            return {
+                                is_registered: true
+                            }
+                        }
+                    })
+                }
+            });
+
+            const data = rawData.map(post => {
+                return {
+                    id: post.id,
+                    title: post.title,
+                    content: post.content,
+                    organizer: post.organizer,
+                    eventDate: post.eventDate,
+                    picture: post.picture,
+                    is_event: post.is_event,
+                    is_registered: post.participants.some(participant => participant.is_registered === true)
+                }
+            });
+
+            return res.status(200).json({
+                status: true,
+                message: 'OK',
+                data: data
+            });
+        } catch (error) {
+            next(error);
+        }
     }
 
 };

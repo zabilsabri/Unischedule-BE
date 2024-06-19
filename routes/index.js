@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { register, login, whoami, verifyEmail, resendPin } = require('../controllers/auth.controllers');
 const { getUsers, getUserById, updateUser, deleteUser, createUser } = require('../controllers/user.controller');
-const { getPost, getPostById, createPost, updatePost, deletePost, getPostParticipantById } = require('../controllers/post.controller');
+const { getPost, getPostById, createPost, updatePost, deletePost, getPostParticipantById, getPostByUserId } = require('../controllers/post.controller');
 const { registerEvent } = require('../controllers/participant.controller');
 const { image } = require('../utils/multer');
 const jwt = require('jsonwebtoken');
@@ -62,6 +62,7 @@ router.post('/user', restrict, isAdmin, image.single('picture'), createUser);
 // Post
 router.get('/posts', getPost);
 router.get('/post/:id', getPostById);
+router.get('/post-user', restrict, getPostByUserId);
 router.get('/post-participant/:id', restrict, isAdmin, getPostParticipantById);
 router.post('/post', restrict, isAdmin, image.single('picture'), createPost);
 router.put('/post/:id', restrict, isAdmin, image.single('picture'), updatePost);
