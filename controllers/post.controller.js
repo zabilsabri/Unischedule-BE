@@ -259,7 +259,12 @@ module.exports = {
             });
 
             const filename = post.picture.substring(post.picture.lastIndexOf('/') + 1);
-            await imageKit.deleteFile(await getFileId(filename));
+
+            const fileId = await getFileId(filename);
+
+            if(fileId != null){
+                await imageKit.deleteFile(fileId);
+            }
 
             await prisma.post.delete({
                 where: { id }
