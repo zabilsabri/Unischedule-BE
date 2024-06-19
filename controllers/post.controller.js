@@ -185,13 +185,15 @@ module.exports = {
                 }
             });
 
-            if(tokens.length != 0){
+            const formattedToken = tokens.map(token => token.token);
+
+            if(formattedToken.length != 0){
                 const message = {
                     notification: {
                         title: title,
                         body: content,
                     },
-                    tokens: tokens,
+                    tokens: formattedToken,
                 };
 
                 const response = await admin.messaging().sendMulticast(message);
