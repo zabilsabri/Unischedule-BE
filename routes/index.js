@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, whoami, verifyEmail, resendPin } = require('../controllers/auth.controllers');
+const { register, login, whoami, verifyEmail, resendPin, registerFcpToken } = require('../controllers/auth.controllers');
 const { getUsers, getUserById, updateUser, deleteUser, createUser } = require('../controllers/user.controller');
 const { getPost, getPostById, createPost, updatePost, deletePost, getPostParticipantById, getPostByUserId } = require('../controllers/post.controller');
 const { registerEvent } = require('../controllers/participant.controller');
@@ -51,6 +51,7 @@ router.get('/whoami', restrict, whoami);
 router.post('/create-admin', restrict, isAdmin, (req, res, next) => { req.body.role = 'ADMIN'; next(); }, register);
 router.post('/verif-email', restrict, verifyEmail);
 router.get('/send-verif', restrict, resendPin);
+router.post('/register-fcp', registerFcpToken);
 
 // Users 
 router.get('/users', restrict, isAdmin, getUsers);

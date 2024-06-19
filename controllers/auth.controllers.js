@@ -252,5 +252,26 @@ module.exports = {
         } catch (error) {
             next(error);
         }
+    },
+
+    registerFcpToken: async (req, res, next) => {
+        try {
+            const { fcp_token } = req.body;
+
+            await prisma.fcp_device.create({
+                data: {
+                    token: fcp_token
+                }
+            })
+
+            return res.status(200).json({
+                status: true,
+                message: 'OK',
+                data: `Successfully registered FCP token`
+            });
+
+        } catch (error) {
+            next(error);
+        }
     }
 };
