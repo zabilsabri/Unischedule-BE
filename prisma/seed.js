@@ -22,7 +22,7 @@ const bcrypt = require('bcrypt');
     });
 
     // create 30 new user
-    // for (let i = 0; i < 30; i++) {
+    // for (let i = 1; i <= 30; i++) {
     //     const user = await prisma.user.upsert({
     //         where: {
     //             email: `user${i}`
@@ -30,7 +30,7 @@ const bcrypt = require('bcrypt');
     //         update: {},
     //         create: {
     //             name: `user${i}`,
-    //             email: `user${i}`,
+    //             email: `user${i}@gmail.com`,
     //             password: password,
     //             gender: 'MALE',
     //             phone_number: `911${i}`,
