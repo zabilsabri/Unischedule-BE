@@ -185,21 +185,23 @@ module.exports = {
                 }
             });
 
-            const message = {
-                notification: {
-                    title: title,
-                    body: content,
-                },
-                tokens: tokens,
-            };
+            if(tokens.length != 0){
+                const message = {
+                    notification: {
+                        title: title,
+                        body: content,
+                    },
+                    tokens: tokens,
+                };
 
-            const response = await admin.messaging().sendMulticast(message);
-            console.log(`${response.successCount} messages were sent successfully`);
-            response.responses.forEach((resp, idx) => {
-                if (!resp.success) {
-                    console.log(`Failed to send message to ${tokens[idx]}: ${resp.error}`);
-                }
-            });
+                const response = await admin.messaging().sendMulticast(message);
+                console.log(`${response.successCount} messages were sent successfully`);
+                response.responses.forEach((resp, idx) => {
+                    if (!resp.success) {
+                        console.log(`Failed to send message to ${tokens[idx]}: ${resp.error}`);
+                    }
+                });
+            }
 
             return res.status(201).json({
                 status: true,
