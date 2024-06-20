@@ -110,7 +110,9 @@ module.exports = {
                             id: true,
                             name: true,
                             std_code: true,
-                            phone_number: true
+                            phone_number: true,
+                            email: true,
+                            gender: true
                         } 
                     }
                 }
@@ -128,7 +130,9 @@ module.exports = {
                     user_id: participant.user.id,
                     name: participant.user.name,
                     std_code: participant.user.std_code,
-                    phone_number: participant.user.phone_number
+                    phone_number: participant.user.phone_number,
+                    email: participant.user.email,
+                    gender: participant.user.gender
                 }
             });
 
