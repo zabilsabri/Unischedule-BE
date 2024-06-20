@@ -360,6 +360,10 @@ module.exports = {
                             return {
                                 is_registered: true
                             }
+                        } else {
+                            return {
+                                is_registered: false
+                            }
                         }
                     })
                 }
