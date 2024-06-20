@@ -244,7 +244,12 @@ module.exports = {
             if(req.file != undefined){
 
                 const filename = oldPost.picture.substring(oldPost.picture.lastIndexOf('/') + 1);
-                await imageKit.deleteFile(await getFileId(filename));
+           
+                const fileId = await getFileId(filename);
+
+                if(fileId != null){
+                    await imageKit.deleteFile(fileId);
+                }
 
                 let strFile = req.file.buffer.toString('base64');
                 url = await imageKit.upload({
