@@ -258,6 +258,16 @@ module.exports = {
         try {
             const { fcp_token } = req.body;
 
+            const checkToken = await prisma.fcp_device.findFirst({ where: { token: fcp_token } });
+
+            if (checkToken) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'FCP token has already been registered!',
+                    data: null
+                });
+            }
+
             await prisma.fcp_device.create({
                 data: {
                     token: fcp_token
