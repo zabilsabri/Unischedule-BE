@@ -66,7 +66,7 @@ router.get('/post/:id', getPostById);
 router.get('/post-user', restrict, getPostByUserId);
 router.get('/post-participant/:id', restrict, isAdmin, getPostParticipantById);
 router.post('/post', restrict, isAdmin, image.single('picture'), createPost);
-router.put('/post/:id', restrict, isAdmin, image.single('picture'), updatePost);
+router.put('/post/:id', restrict, image.single('picture'), updatePost);
 router.delete('/post/:id', restrict, isAdmin, deletePost);
 router.post('/test-notif', testNotif);
 
