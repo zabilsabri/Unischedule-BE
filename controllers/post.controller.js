@@ -233,13 +233,6 @@ module.exports = {
             let { title, content, organizer, eventDate, is_event } = req.body;
             let url;
 
-            if (req.user.role != 'ADMIN' || req.user.id != id) {
-                return res.status(401).json({
-                    status: false,
-                    message: 'Unauthorized!'
-                });
-            }
-
             const oldPost = await prisma.post.findUnique({
                 where: { id },
                 select: { picture: true }
