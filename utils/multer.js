@@ -17,6 +17,9 @@ module.exports = {
                 cb(err, false);
             }
         },
+        limits: {
+            fileSize: 2 * 1024 * 1024 // 2mb limit
+        },
         onError: (err, next) => {
             console.log(err);
             next(err);
