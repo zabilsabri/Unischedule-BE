@@ -75,6 +75,8 @@ updateUser: async (req, res, next) => {
             });
         }
 
+        let emailChanged = user.email_verified;
+
         if(req.user.role != 'ADMIN' && req.user.id != user.id) {
             return res.status(401).json({
                 status: false,
@@ -82,8 +84,16 @@ updateUser: async (req, res, next) => {
             });
         }
 
-        let { name, std_code, gender, phone_number } = req.body;
+        let { name, std_code, gender, phone_number, email, password } = req.body;
         let url;
+
+        if(password != null){
+            password = bcrypt.hashSync(password, 10);
+        }
+
+        if(email != user.email && email != undefined){
+            emailChanged = false;
+        }
 
         if(req.file != undefined) {
 
@@ -106,7 +116,10 @@ updateUser: async (req, res, next) => {
                 std_code,
                 gender,
                 phone_number,
-                profile_image: (url === undefined) ? user.profile_image : url.url
+                profile_image: (url === undefined) ? user.profile_image : url.url,
+                email,
+                email_verified: emailChanged,
+                password: password ?? user.password
             }
         });
 
